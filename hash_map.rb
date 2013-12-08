@@ -7,30 +7,30 @@ class MyHashMap
     @num_elements = 0
   end
   
-  def [](el)
-    bucket_for(el).each do |key, value|
-      return value if key == el
+  def [](key)
+    bucket_for(key).each do |existing_key, value|
+      return value if existing_key == key
     end
     @default
   end
   
-  def []=(el, value)
-    @num_elements += 1
+  def []=(key, value)
     resize if @num_elements.fdiv(@num_buckets) > 0.75
-    add(el, value)
+    add(key, value)
+    value
   end
   
   private
   
-  def bucket_for(el)
-    @buckets[el.hash % @num_buckets]
+  def bucket_for(key)
+    @buckets[key.hash % @num_buckets]
   end
   
-  def add(el, value)
-    bucket_for(el).each do |kv_pair|
-      kv_pair[1] = value && return if kv_pair[0] == el
-    end
-    .push([el, value])
+  def add(key, value)
+    bucket_for(key).each do |kv_pair|
+      return kv_pair[1] = value if kv_pair[0] == key
+    end << [key, value]
+    @num_elements += 1
   end
   
   def resize
@@ -38,7 +38,7 @@ class MyHashMap
     @num_buckets *= 2
     @buckets = Array.new(@num_buckets) { [] }
     old_buckets.each do |bucket|
-      bucket.each { |key, value| add(key, value) }
+      bucket.each { |key, value| bucket_for(key) << [key, value] }
     end
   end
   
