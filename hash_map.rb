@@ -1,5 +1,4 @@
 class MyHashMap
-
   def initialize(default = nil)
     @default = default
     @num_buckets = 10
@@ -40,6 +39,5 @@ class MyHashMap
     old_buckets.each do |bucket|
       bucket.each { |key, value| bucket_for(key) << [key, value] }
     end
-  end
-  
+  end  
 end
