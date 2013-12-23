@@ -1,5 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "loose-array.h"
+#include "int-array.h"
 #include "strhash.h"
 

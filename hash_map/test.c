@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "loose-array.h"
+#include "int-array.h"
 
 int main() {
   Array arr = makeArray();
@@ -12,9 +12,9 @@ int main() {
 
   int otherValue = 2;
   push(subArrPtr, &otherValue);
-  void* value2 = valueAt(*subArrPtr, 1);
+  int* value2 = valueAt(*subArrPtr, 1);
 
-  printf("%p\n", value2);
+  printf("%d\n", *value2);
 
   return 0;
 }
