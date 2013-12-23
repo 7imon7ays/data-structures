@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-
 typedef struct {
   int storeSize;
   int storeLimit;
@@ -29,7 +26,7 @@ void copy(void** from, void** to) {
 
 void resize(Array* arrPtr) {
   arrPtr->storeLimit = arrPtr->storeLimit * 2;
-  int* newStore = malloc(sizeof(void*) * arrPtr->storeLimit);
+  void* newStore = malloc(sizeof(void*) * arrPtr->storeLimit);
   copy(arrPtr->store, newStore);
   free(arrPtr->store);
   arrPtr->store = newStore;
@@ -37,7 +34,12 @@ void resize(Array* arrPtr) {
 
 
 void push(Array* arrPtr, void* valuePtr) {
+  printf("pushing value %d\n",
+      valuePtr + 1 * sizeof(void*));
   if (arrPtr->storeSize + 1 > arrPtr->storeLimit) {
+    printf("array resizing because store size is ");
+    printf("%d, and store limit is %d.\n",
+        arrPtr->storeSize, arrPtr->storeLimit);
     resize(arrPtr);
   }
 
@@ -47,20 +49,3 @@ void push(Array* arrPtr, void* valuePtr) {
   return *valuePtr;
 }
 
-int main(int argc, char* argv[]) {
-  Array myArray = makeArray();
-
-  int i;
-  for (i = 0; i < 100; i++) {
-    push(&myArray, i);
-  }
-  push(&myArray, "hello");
-
-  void* intElement = valueAt(myArray, 99);
-  void* strElement = valueAt(myArray, 100);
-
-  printf("second to last element: %d\n", (int)intElement);
-  printf("last element: %s\n", (char*)strElement);
-
-  return 0;
-}
