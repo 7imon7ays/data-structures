@@ -34,8 +34,6 @@ void resize(Array* arrPtr) {
 
 
 void push(Array* arrPtr, void* valuePtr) {
-  printf("pushing value %d\n",
-      valuePtr + 1 * sizeof(void*));
   if (arrPtr->storeSize + 1 > arrPtr->storeLimit) {
     printf("array resizing because store size is ");
     printf("%d, and store limit is %d.\n",
@@ -45,7 +43,5 @@ void push(Array* arrPtr, void* valuePtr) {
 
   arrPtr->store[arrPtr->storeSize] = valuePtr;
   arrPtr->storeSize++;
-
-  return *valuePtr;
 }
 
