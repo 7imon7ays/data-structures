@@ -1,95 +1,109 @@
-#include "header.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include "int-array.h"
+#include "strhash.h"
 
+// 1. All constructors should take pointers so the user
+// can allocate structs on the stack or the heap.
+
+// 2. KV pairs should be structs
 
 // initialization
 
 typedef struct {
   Array store;
-  int numBuckets;
   int numElems;
 } HashMap;
 
-void makeBuckets(HashMap* hashPtr) {
-  HashMap hashMap = *hashPtr;
+void _makeBuckets(HashMap* hashPtr) {
   int i;
 
-  Array* bucketHolder = malloc(hashMap.numBuckets * sizeof(Array));
-
-  for (i = 0; i < hashMap.numBuckets; i++) {
-    bucketHolder[i] = makeArray();
-    push(&hashMap.store, &bucketHolder[i]);
+  for (i = 0; i < hashPtr->store.storeLimit; i++) {
+    Array* ptrToBucket = malloc(sizeof(Array));
+    makeArray(ptrToBucket);
+    push(&hashPtr->store, ptrToBucket);
+    ptrToBucket->id = hashPtr->store.storeSize;
   }
 }
 
-HashMap makeHashMap() {
-  HashMap newHashMap;
-  newHashMap.store = makeArray();
-  newHashMap.numBuckets = 10;
-  makeBuckets(&newHashMap);
-  newHashMap.numElems = 0;
-
-  return newHashMap;
+void makeHashMap(HashMap* hashPtr) {
+  Array* newStorePtr = malloc(sizeof(Array));
+  hashPtr->store = *newStorePtr;
+  makeArray(&hashPtr->store);
+  _makeBuckets(hashPtr);
+  hashPtr->numElems = 0;
 }
 
 // manipulation
 
-Array* forEl(HashMap* hashPtr, char* key) {
-  int len;
-  for (len = 0; key[len] != '\0'; len++) {}
-  uint32_t hashedKey = SuperFastHash(key, len);
-  int bucketIndex = hashedKey % hashPtr->numBuckets;
-  printf("key %s hashes to bucket # %d\n", key, bucketIndex);
-  Array* bucketPtr = valueAt(hashPtr->store, bucketIndex);
+Array* _forEl(HashMap* hashPtr, char key) {
+  char* keyString = malloc(sizeof(char) + 1);
+  keyString[0] = key;
+  keyString[1] = '\0';
+  uint32_t hashedKey = SuperFastHash(keyString, 1);
+  int bucketIndex = hashedKey % hashPtr->store.storeSize;
+  Array* bucketPtr = (Array*) valueAt(&hashPtr->store, bucketIndex);
 
   return bucketPtr;
 }
 
-void add(HashMap* hashPtr, char* key, int value) {
-  Array* bucketPtr = forEl(hashPtr, key);
+typedef struct {
+  char key;
+  int value;
+} KVPair;
 
-  Array kvPair = makeArray();
-  push(&kvPair, key);
-  push(&kvPair, &value);
+// TODO: check for inclusion before adding
+void add(HashMap* hashPtr, char key, int value) {
+  Array* bucketPtr = _forEl(hashPtr, key);
+  KVPair* kvPairPtr = malloc(sizeof(KVPair));
+  kvPairPtr->key = key;
+  kvPairPtr->value = value;
 
-  push(bucketPtr, &kvPair);
+  push(bucketPtr, kvPairPtr);
+  Array* retrievedPairPtr = (Array*) valueAt(bucketPtr, bucketPtr->storeSize - 1);
+  printf("added pair with store address %p\n", &retrievedPairPtr->store);
 }
 
-int find(HashMap* hashPtr, char* key) {
-  Array bucket = *forEl(hashPtr, key);
-  unsigned long bucketSize = sizeof(bucket) / sizeof(Array*);
-  int i;
-  for (i = 0; i < bucketSize; i++) {
-    printf("looking for key %s\n", key);
-    Array* ptrToThisPair = (Array*) valueAt(bucket, i);
-
-    printf("inspecting pair with address %p\n", ptrToThisPair);
-    //printf("pair has %i elements\n",(int) sizeof(*ptrToThisPair) / sizeof(Array*));
-    if (ptrToThisPair == '\0') { continue; }
-    //char* thisKey = *(ptrToThisPair->store) + 1;
-    //char* thisKey = (char*) valueAt(*ptrToThisPair, 0);
-    //printf("inspecting key %s\n", thisKey);
-/*
-    if ((char*) *valueAt(*ptrToThisPair, 0) == key) {
-      return (int) valueAt(*ptrToThisPair, 1);
-    }*/
+int find(HashMap* hashPtr, char key) {
+  if (hashPtr->store.storeSize < 1) {
+    printf("hash is empty");
+    return 0;
   }
-
+  Array* bucketPtr = _forEl(hashPtr, key);
+  int i;
+  for (i = 0; i < bucketPtr->storeSize; i++) {
+    KVPair* thisPairPtr = (KVPair*) valueAt(bucketPtr, i);
+    if (thisPairPtr->key == key) {
+      return thisPairPtr->value;
+    }
+  }
+  printf("nothing found for key %c\n", key);
   return 0;
 }
 
 int main() {
-  HashMap myHash = makeHashMap();
+  HashMap* myHashPtr = malloc(sizeof(HashMap));
+  makeHashMap(myHashPtr);
 
 
-  add(&myHash, "one", 1);
-  add(&myHash, "two", 2);
-  add(&myHash, "three", 3);
+  add(myHashPtr, 'a', 1);
+  add(myHashPtr, 'b', 2);
+  add(myHashPtr, 'c', 3);
+  /*
+  add(&myHash, 'd', 4);
+  add(&myHash, 'e', 5);
+  add(&myHash, 'f', 6);
+  add(&myHash, 'g', 7);
+  */
 
-  int one = find(&myHash, "one");
-  int two = find(&myHash, "two");
-  //int three = find(&myHash, "three");
+  int one = find(myHashPtr, 'a');
+  int two = find(myHashPtr, 'b');
+  int three = find(myHashPtr, 'c');
 
-  printf("%d\n", one);
+  printf("value two has key %d\n", two);
+  printf("value three has key %d\n", three);
+  printf("value one has key %d\n", one);
 
   return 0;
 }
