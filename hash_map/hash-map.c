@@ -103,7 +103,7 @@ void* find(HashMap* hashPtr, void* keyPtr) {
       return thisPairPtr->valuePtr;
     }
   }
-  printf("nothing found for key %s\n", (char*) keyPtr);
+
   int* nullPtr = malloc(sizeof(int));
   *nullPtr = 0;
   return nullPtr;
@@ -113,11 +113,16 @@ void resizeHash(HashMap* hashPtr) {
 
 }
 
-// TODO return if key already exists with that value.
 void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
   if (hashPtr->numElems / hashPtr->store.storeSize >
       hashPtr->maxElemsPerBucket) {
     resizeHash(hashPtr);
+  }
+
+  void* foundValuePtr = find(hashPtr, keyPtr);
+  if (hashPtr->eq(valuePtr, foundValuePtr)) {
+    printf("Same value already at that key\n");
+    return;
   }
 
   Array* bucketPtr = _forEl(hashPtr, keyPtr);
@@ -128,6 +133,8 @@ void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
   push(bucketPtr, kvPairPtr);
   hashPtr->numElems++;
 }
+
+// Testing
 
 int main() {
   HashMap* myHashPtr = malloc(sizeof(HashMap));
@@ -150,6 +157,9 @@ int main() {
   *value2Ptr = 'b';
   add(myHashPtr, key2Ptr, value2Ptr);
 
+  // add same value for "keyA" to test against redundancy
+  add(myHashPtr, key1Ptr, value1Ptr);
+
   // look up keys "keyA" and "kB". Also look up absent key.
   int* onePtr = find(myHashPtr, "keyA");
   char* twoPtr = find(myHashPtr, "keyB");
@@ -158,6 +168,10 @@ int main() {
   printf("key %s has value %d\n", "keyA", *onePtr);
   printf("key %s has value %c\n", "kB", *twoPtr);
   printf("key 'none' has value %d\n", *nonePtr);
+
+  free(myHashPtr);
+  free(value1Ptr);
+  free(value2Ptr);
 
   return 0;
 }
