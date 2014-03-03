@@ -48,14 +48,13 @@ int strHash(char* sp1) {
   return SuperFastHash(sp1, strLen);
 }
 
-void _makeBuckets(HashMap* hashPtr) {
+void _makeBuckets(Array* arrayPtr, int numBuckets) {
   int i;
 
-  for (i = 0; i < hashPtr->store.storeLimit; i++) {
+  for (i = 0; i < numBuckets; i++) {
     Array* ptrToBucket = malloc(sizeof(Array));
     makeArray(ptrToBucket);
-    push(&hashPtr->store, ptrToBucket);
-    ptrToBucket->id = hashPtr->store.storeSize;
+    push(arrayPtr, ptrToBucket);
   }
 }
 
@@ -69,7 +68,7 @@ void makeHashMap(
   Array* newStorePtr = malloc(sizeof(Array));
   hashPtr->store = *newStorePtr;
   makeArray(&hashPtr->store);
-  _makeBuckets(hashPtr);
+  _makeBuckets(&hashPtr->store, 10);
   hashPtr->numElems = 0;
 
   hashPtr->eq = eq;
@@ -78,10 +77,10 @@ void makeHashMap(
 
 // manipulation
 
-Array* _forEl(HashMap* hashPtr, void* keyPtr) {
-  uint32_t hashedKey = hashPtr->hash(keyPtr);
-  int bucketIndex = hashedKey % hashPtr->store.storeSize;
-  Array* bucketPtr = (Array*) valueAt(&hashPtr->store, bucketIndex);
+Array* _forEl(Array* storePtr, int (*hash)(void*), void* keyPtr) {
+  uint32_t hashedKey = hash(keyPtr);
+  int bucketIndex = hashedKey % storePtr->storeSize;
+  Array* bucketPtr = (Array*) valueAt(storePtr, bucketIndex);
 
   return bucketPtr;
 }
@@ -95,7 +94,7 @@ typedef struct {
 void* find(HashMap* hashPtr, void* keyPtr) {
   assert(hashPtr->store.storeSize != 0);
 
-  Array* bucketPtr = _forEl(hashPtr, keyPtr);
+  Array* bucketPtr = _forEl(&(hashPtr->store), hashPtr->hash, keyPtr);
   int i;
   for (i = 0; i < bucketPtr->storeSize; i++) {
     KVPair* thisPairPtr = (KVPair*) valueAt(bucketPtr, i);
@@ -110,12 +109,39 @@ void* find(HashMap* hashPtr, void* keyPtr) {
 }
 
 void resizeHash(HashMap* hashPtr) {
+  printf("resizing hash \n");
 
+  Array* oldStorePtr = &hashPtr->store;
+  Array* newStorePtr = malloc(sizeof(Array));
+  makeArray(newStorePtr);
+
+  _makeBuckets(newStorePtr, oldStorePtr->storeSize * 2);
+
+  printf("made buckets\n");
+
+  int i;
+  int numBuckets = oldStorePtr->storeSize;
+  for (i = 0; i < numBuckets; i++) {
+    Array* oldBucketPtr = (Array*) valueAt(oldStorePtr, i);
+    printf("found old bucket at index %d\n", i);
+    int j;
+    for (j = 0; j < oldBucketPtr->storeSize; j++) {
+      printf("store size is %d\n", oldBucketPtr->storeSize);
+      KVPair* kvPairPtr = (KVPair*) valueAt(oldBucketPtr, j);
+      printf("found kv pair with key %d\n", *((int*) kvPairPtr->keyPtr));
+      Array* newBucketPtr = _forEl(newStorePtr, hashPtr->hash, kvPairPtr->keyPtr);
+      push(newBucketPtr, kvPairPtr);
+    }
+  }
+
+  hashPtr->store = *newStorePtr;
+  //free(oldStorePtr); TODO: fix freeing
+  printf("to a store limit of %d\n", hashPtr->store.storeLimit);
 }
 
 void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
-  if (hashPtr->numElems / hashPtr->store.storeSize >
-      hashPtr->maxElemsPerBucket) {
+  if ( (float) hashPtr->numElems / hashPtr->store.storeSize >
+      hashPtr->maxElemsPerBucket ) {
     resizeHash(hashPtr);
   }
 
@@ -125,7 +151,7 @@ void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
     return;
   }
 
-  Array* bucketPtr = _forEl(hashPtr, keyPtr);
+  Array* bucketPtr = _forEl(&(hashPtr->store), hashPtr->hash, keyPtr);
   KVPair* kvPairPtr = malloc(sizeof(KVPair));
   kvPairPtr->keyPtr = keyPtr;
   kvPairPtr->valuePtr = valuePtr;
@@ -135,7 +161,7 @@ void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
 }
 
 // Testing
-
+/*
 int main() {
   HashMap* myHashPtr = malloc(sizeof(HashMap));
   makeHashMap(
@@ -175,3 +201,4 @@ int main() {
 
   return 0;
 }
+*/

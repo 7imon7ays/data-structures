@@ -27,11 +27,12 @@ void copy(void** from, void** to, int numEls) {
 }
 
 void resize(Array* arrPtr) {
-  arrPtr->storeLimit = arrPtr->storeLimit * 2;
-  int* newStore = malloc(sizeof(void*) * arrPtr->storeLimit);
-  copy(arrPtr->store, (void*) newStore, arrPtr->storeSize);
+  int oldStoreLimit = arrPtr->storeLimit;
+  void** newStore = (void**) malloc(sizeof(void*) * oldStoreLimit * 2);
+  copy(arrPtr->store, newStore, oldStoreLimit);
+  arrPtr->storeLimit = oldStoreLimit * 2;
   free(arrPtr->store);
-  arrPtr->store = (void**) newStore;
+  arrPtr->store = newStore;
 }
 
 
