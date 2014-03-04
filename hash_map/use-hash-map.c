@@ -1,4 +1,4 @@
-#include "hash-map.h"
+#include "hash-header.h"
 
 int main() {
   HashMap* myHashPtr = malloc(sizeof(HashMap));

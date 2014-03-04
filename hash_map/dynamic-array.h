@@ -40,4 +40,3 @@ void push(Array* arrPtr, void* valuePtr) {
   arrPtr->storeSize++;
   assert( arrPtr->storeSize <= arrPtr->storeLimit);
 }
-
