@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "int-array.h"
+#include "array-header.h"
 
 int main() {
   Array arr = makeArray();

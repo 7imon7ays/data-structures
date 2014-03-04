@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include "int-array.h"
-#include "strhash.h"
-
-
+#include "hash-header.h"
 // initialization with hashing and comparison
 // functions for each type.
 
@@ -109,7 +102,6 @@ void* find(HashMap* hashPtr, void* keyPtr) {
 }
 
 void resizeHash(HashMap* hashPtr) {
-  printf("resizing hash \n");
 
   Array* oldStorePtr = &hashPtr->store;
   Array* newStorePtr = malloc(sizeof(Array));
@@ -117,18 +109,13 @@ void resizeHash(HashMap* hashPtr) {
 
   _makeBuckets(newStorePtr, oldStorePtr->storeSize * 2);
 
-  printf("made buckets\n");
-
   int i;
   int numBuckets = oldStorePtr->storeSize;
   for (i = 0; i < numBuckets; i++) {
     Array* oldBucketPtr = (Array*) valueAt(oldStorePtr, i);
-    printf("found old bucket at index %d\n", i);
     int j;
     for (j = 0; j < oldBucketPtr->storeSize; j++) {
-      printf("store size is %d\n", oldBucketPtr->storeSize);
       KVPair* kvPairPtr = (KVPair*) valueAt(oldBucketPtr, j);
-      printf("found kv pair with key %d\n", *((int*) kvPairPtr->keyPtr));
       Array* newBucketPtr = _forEl(newStorePtr, hashPtr->hash, kvPairPtr->keyPtr);
       push(newBucketPtr, kvPairPtr);
     }
@@ -136,7 +123,6 @@ void resizeHash(HashMap* hashPtr) {
 
   hashPtr->store = *newStorePtr;
   //free(oldStorePtr); TODO: fix freeing
-  printf("to a store limit of %d\n", hashPtr->store.storeLimit);
 }
 
 void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
@@ -147,7 +133,6 @@ void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
 
   void* foundValuePtr = find(hashPtr, keyPtr);
   if (hashPtr->eq(valuePtr, foundValuePtr)) {
-    printf("Same value already at that key\n");
     return;
   }
 
@@ -159,46 +144,3 @@ void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
   push(bucketPtr, kvPairPtr);
   hashPtr->numElems++;
 }
-
-// Testing
-/*
-int main() {
-  HashMap* myHashPtr = malloc(sizeof(HashMap));
-  makeHashMap(
-    myHashPtr,
-    (int (*)(void*, void*)) strEq,
-    (int (*)(void*)) strHash);
-
-  // add key "keyA" with value 1
-  char* key1Ptr = malloc(sizeof(char) * 5);
-  int* value1Ptr = malloc(sizeof(int*));
-  key1Ptr = "keyA";
-  *value1Ptr = 1;
-  add(myHashPtr, key1Ptr, value1Ptr);
-
-  // add key "keyB" with value 'b'
-  char* key2Ptr = malloc(sizeof(char) * 3);
-  char* value2Ptr = malloc(sizeof(char));
-  key2Ptr = "keyB";
-  *value2Ptr = 'b';
-  add(myHashPtr, key2Ptr, value2Ptr);
-
-  // add same value for "keyA" to test against redundancy
-  add(myHashPtr, key1Ptr, value1Ptr);
-
-  // look up keys "keyA" and "kB". Also look up absent key.
-  int* onePtr = find(myHashPtr, "keyA");
-  char* twoPtr = find(myHashPtr, "keyB");
-  int* nonePtr = find(myHashPtr, "none");
-
-  printf("key %s has value %d\n", "keyA", *onePtr);
-  printf("key %s has value %c\n", "kB", *twoPtr);
-  printf("key 'none' has value %d\n", *nonePtr);
-
-  free(myHashPtr);
-  free(value1Ptr);
-  free(value2Ptr);
-
-  return 0;
-}
-*/
