@@ -1,5 +1,4 @@
 typedef struct {
-  int id;
   int storeSize;
   int storeLimit;
   void** store;
@@ -11,18 +10,18 @@ void makeArray(Array* arrPtr) {
   arrPtr->store = malloc(sizeof(void*) * arrPtr->storeLimit);
 }
 
-int* valueAt(Array* arrPtr, int index) {
+void* valueAt(Array* arrPtr, int index) {
   return *(arrPtr->store + index);
 }
 
-void copy(void** from, void** to, int numEls) {
+static void copy(void** from, void** to, int numEls) {
   int i;
   for (i = 0; i < numEls; i++) {
     to[i] = from[i];
   }
 }
 
-void resize(Array* arrPtr) {
+static void resize(Array* arrPtr) {
   int oldStoreLimit = arrPtr->storeLimit;
   void** newStore = (void**) malloc(sizeof(void*) * oldStoreLimit * 2);
   copy(arrPtr->store, newStore, oldStoreLimit);
