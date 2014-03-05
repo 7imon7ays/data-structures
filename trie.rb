@@ -3,7 +3,7 @@ class Trie
     @root = Hash.new
   end
 
-  def build(expression, value)
+  def add(expression, value)
     node = @root
     sub_expression = format(expression)
 
