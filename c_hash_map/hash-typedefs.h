@@ -7,6 +7,13 @@ typedef struct {
   int (*hash)(void*);
 } HashMap;
 
+/*
+typedef struct {
+  void* keyPtr;
+  void* valuePtr;
+} KVPair;
+*/
+
 int intEq(int* ip1, int* ip2) {
   return (*ip1 == *ip2 ? 1 : 0);
 }
@@ -36,3 +43,4 @@ int strHash(char* sp1) {
   int strLen = strlen(sp1);
   return SuperFastHash(sp1, strLen);
 }
+

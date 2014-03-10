@@ -1,4 +1,4 @@
-#include "hash-header.h"
+#include "../c_hash_map/hash-header.h"
 
 int main() {
   HashMap* myHashPtr = malloc(sizeof(HashMap));
@@ -15,8 +15,18 @@ int main() {
     *keyPtr = i;
     *valuePtr = j;
     add(myHashPtr, keyPtr, valuePtr);
-    printf("hash now has %d els and %d buckets\n",
-        myHashPtr->numElems,
-        myHashPtr->store.storeSize);
   }
+
+  int twenty = 20;
+  int* valueAtTwentyPtr = (int*) find(myHashPtr, &twenty);
+  assert(*valueAtTwentyPtr == 20);
+
+  int unmapped = 101;
+  int* unmappedValuePtr = (int*) find(myHashPtr, &unmapped);
+  assert(*unmappedValuePtr == 0);
+
+  // freeHashMap(myHashPtr)
+
+  return 0;
 }
+

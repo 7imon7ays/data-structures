@@ -4,6 +4,11 @@ typedef struct {
   void** store;
 } Array;
 
+typedef struct {
+  void* keyPtr;
+  void* valuePtr;
+} KVPair;
+
 void makeArray(Array* arrPtr) {
   arrPtr->storeSize = 0;
   arrPtr->storeLimit = 10;
@@ -40,3 +45,17 @@ void push(Array* arrPtr, void* valuePtr) {
   arrPtr->storeSize++;
   assert( arrPtr->storeSize <= arrPtr->storeLimit);
 }
+
+void freeArray(Array* arrPtr) {
+  int i;
+  for (i = 0; i < arrPtr->storeSize; i++) {
+    void* thisElPtr = valueAt(arrPtr, i);
+    if ( sizeof(*thisElPtr) == sizeof(Array) ) {
+      freeArray(thisElPtr);
+    } else {
+      free(thisElPtr);
+    }
+  }
+  free(arrPtr);
+}
+

@@ -1,4 +1,4 @@
-#include "array-header.h"
+#include "../c_array/array-header.h"
 
 int main(int argc, char* argv[]) {
   Array* myArrPtr = malloc(sizeof(Array));
@@ -12,16 +12,19 @@ int main(int argc, char* argv[]) {
     push(myArrPtr, valuePtr);
   }
 
+  Array* nestedArrPtr = malloc(sizeof(Array));
+  makeArray(nestedArrPtr);
+  push(myArrPtr, nestedArrPtr);
+
   int* twentiethPtr = (int*) valueAt(myArrPtr, 20);
   int* thirtyfifthPtr = (int*) valueAt(myArrPtr, 35);
-  printf("Index 20 has value %d\n", *twentiethPtr);
-  printf("Index 35 has value %d\n", *thirtyfifthPtr);
+  Array* retrivedNestedArrPtr = valueAt(myArrPtr, 40);
 
-  for (i = 0; i < myArrPtr->storeSize; i++) {
-    free(valueAt(myArrPtr, i));
-  }
+  assert(*twentiethPtr == 20);
+  assert(*thirtyfifthPtr == 35);
+  assert( sizeof(*retrivedNestedArrPtr) == sizeof(*nestedArrPtr) );
 
-  free(myArrPtr);
+  freeArray(myArrPtr);
 
   return 0;
 }

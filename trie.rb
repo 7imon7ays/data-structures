@@ -3,7 +3,7 @@ class Trie
     @root = Hash.new
   end
 
-  def add(expression, value)
+  def add(expression)
     node = @root
     sub_expression = format(expression)
 
@@ -11,7 +11,7 @@ class Trie
       node[ch] ||= Hash.new
       node = node[ch]
     end
-    node[:leaf] = { sub_expression => value }
+    node[:leaf] = expression
   end
 
   def find(expression)
@@ -21,7 +21,7 @@ class Trie
     sub_expression.each_char do |ch|
       return nil unless node = node[ch]
     end
-    node[:leaf][sub_expression]
+    node[:leaf]
   end
 
   private
@@ -34,3 +34,4 @@ class Trie
       .downcase
   end
 end
+

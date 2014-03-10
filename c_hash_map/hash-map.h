@@ -1,4 +1,3 @@
-
 void _makeBuckets(Array* arrayPtr, int numBuckets) {
   int i;
 
@@ -35,12 +34,6 @@ static Array* _forEl(Array* storePtr, int (*hash)(void*), void* keyPtr) {
 
   return bucketPtr;
 }
-
-typedef struct {
-  void* keyPtr;
-  void* valuePtr;
-} KVPair;
-
 
 void* find(HashMap* hashPtr, void* keyPtr) {
   assert(hashPtr->store.storeSize != 0);
@@ -79,7 +72,6 @@ static void resizeHash(HashMap* hashPtr) {
   }
 
   hashPtr->store = *newStorePtr;
-  //free(oldStorePtr); TODO: fix freeing
 }
 
 void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
@@ -101,3 +93,6 @@ void add(HashMap* hashPtr, void* keyPtr, void* valuePtr) {
   push(bucketPtr, kvPairPtr);
   hashPtr->numElems++;
 }
+
+// TODO: write free function
+
