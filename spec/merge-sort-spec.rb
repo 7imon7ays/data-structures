@@ -22,3 +22,4 @@ describe "merge sort" do
     merge_sort(odd_number).should == (1..23).to_a
   end
 end
+
