@@ -2,20 +2,18 @@
 #include <stdio.h>
 
 int main() {
-  int nums[] = { 5, 4, 0, 2, 1 },
-      i, left, right, len = 5;
+  int nums[] = { 6, 5, 6, 2, 3, 4 },
+      i, len = 6;
 
   for (i = 0; i < len; i++) {
-    printf("%d", nums[i]);
+    printf("%d ", nums[i]);
   }
   printf("\n");
 
-  int firstNum = nums[0];
-
-  qsort(&firstNum, len);
+  qsort(nums, len);
 
   for (i = 0; i < len; i++) {
-    printf("%d", nums[i]);
+    printf("%d ", nums[i]);
   }
   printf("\n");
 
