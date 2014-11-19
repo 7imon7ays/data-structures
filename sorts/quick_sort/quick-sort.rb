@@ -5,7 +5,7 @@ def quick_sort! arr, left = 0, right = arr.length - 1
 
   pivot_idx = (left + right) / 2
   # move pivot to left-most index so comparisons
-  # to remaing elements are sequential
+  # to remaining elements are sequential
   swap! arr, pivot_idx, left
 
   num_smaller = 0
