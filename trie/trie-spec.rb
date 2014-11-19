@@ -1,4 +1,4 @@
-load 'trie.rb'
+require_relative './trie.rb'
 require 'rspec'
 
 describe "trie" do

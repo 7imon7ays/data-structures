@@ -1,4 +1,4 @@
-load 'merge-sort.rb'
+require_relative './merge-sort.rb'
 require 'rspec'
 
 describe "merge sort" do
@@ -20,6 +20,11 @@ describe "merge sort" do
   it "sorts an odd number of elements" do
     odd_number = (1..23).to_a.shuffle
     merge_sort(odd_number).should == (1..23).to_a
+  end
+
+  it "sorts duplicate elements" do
+    duplicates = [3, 3, 2, 1, 2, 1]
+    merge_sort(duplicates).should == duplicates.sort
   end
 end
 

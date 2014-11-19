@@ -1,4 +1,4 @@
-#include "../c_array/array-header.h"
+#include "./array-header.h"
 
 int main(int argc, char* argv[]) {
   Array* myArrPtr = malloc(sizeof(Array));

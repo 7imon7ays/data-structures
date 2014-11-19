@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "../merge-sort.h"
+#include "merge-sort.h"
 
 int numsEq(int* src, int* targ, int len) {
   int i;
