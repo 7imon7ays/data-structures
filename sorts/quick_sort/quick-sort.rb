@@ -1,6 +1,6 @@
-def quick_sort! arr, left = 0, right = arr.length - 1
+def quick_sort! arr, left = 0, right = arr.length - 1, &comp
   # left is greater than right when there are two
-  # els remaining and left starts at "partition + 1"
+  # elems remaining and left starts at "partition + 1"
   return if left >= right 
 
   pivot_idx = (left + right) / 2
@@ -9,8 +9,12 @@ def quick_sort! arr, left = 0, right = arr.length - 1
   swap! arr, pivot_idx, left
 
   num_smaller = 0
+  pivot = arr[left]
   (left + 1..right).each do |i|
-    if arr[i] < arr[left]
+    current_el = arr[i]
+    current_el_precedes = (block_given? ? comp.call(current_el, pivot)
+                                        : current_el < pivot)
+    if current_el_precedes
       num_smaller += 1
       swap! arr, i, left + num_smaller
     end
@@ -20,8 +24,8 @@ def quick_sort! arr, left = 0, right = arr.length - 1
   # els from pivot's greater els
   right_partition = left + num_smaller
   swap! arr, left, right_partition
-  quick_sort! arr, left, right_partition - 1
-  quick_sort! arr, right_partition + 1, right
+  quick_sort! arr, left, right_partition - 1, &comp
+  quick_sort! arr, right_partition + 1, right, &comp
 end
 
 def swap! arr, i, j
