@@ -16,17 +16,6 @@ int numsEq(void* src[], void* targ[], int len) {
   return 1;
 }
 
-int ascending(void* aPtr, void* bPtr) {
-  int a = *(int*) aPtr, b = *(int*) bPtr;
-  return a > b;
-}
-
-int descending(void* aPtr, void* bPtr) {
-  int a = *(int*) aPtr,
-      b = *(int*) bPtr;
-  return a < b;
-}
-
 void copyPtrs(void** ptrs , int vals[], int len) {
   int i;
   for (i = 0; i < len; i++) {
@@ -46,7 +35,7 @@ int main() {
   pointersExpected = malloc(sizeof(void*) * len);
   copyPtrs(pointersOrig, oneEl, len);
   copyPtrs(pointersExpected, oneElExpected, len);
-  quickSort(pointersOrig, len, (int (*)(void*, void*)) ascending);
+  quickSort(pointersOrig, len, 0);
 
   assert( numsEq(pointersExpected, pointersOrig, len) );
   free(pointersOrig);
@@ -60,7 +49,7 @@ int main() {
   pointersExpected = malloc(sizeof(void*) * len);
   copyPtrs(pointersOrig, dups, len);
   copyPtrs(pointersExpected, dupsExpectd, len);
-  quickSort(pointersOrig, len, (int (*)(void*, void*)) ascending);
+  quickSort(pointersOrig, len, 0);
 
   assert( numsEq(pointersExpected, pointersOrig, len) );
   free(pointersOrig);
@@ -74,7 +63,7 @@ int main() {
   pointersExpected = malloc(sizeof(void*) * len);
   copyPtrs(pointersOrig, oddNums, len);
   copyPtrs(pointersExpected, oddExpected, len);
-  quickSort(pointersOrig, len, (int (*)(void*, void*)) ascending);
+  quickSort(pointersOrig, len, 0);
 
   assert( numsEq(pointersExpected, pointersOrig, len) );
   free(pointersOrig);
@@ -88,13 +77,13 @@ int main() {
   pointersExpected = malloc(sizeof(void*) * len);
   copyPtrs(pointersOrig, evenNums, len);
   copyPtrs(pointersExpected, evenExpected, len);
-  quickSort(pointersOrig, len, (int (*)(void*, void*)) ascending);
+  quickSort(pointersOrig, len, 0);
 
   assert( numsEq(pointersExpected, pointersOrig, len) );
   free(pointersOrig);
   free(pointersExpected);
 
-  // it sorts elements in a specified order
+  // it takes an optional function pointer to sort in a specified order
   len = 6;
   int elements[] = { 6, 5, 4, 3, 2, 1 };
   int elementsExpected[] = { 6, 5, 4, 3, 2, 1 };
@@ -102,7 +91,7 @@ int main() {
   pointersExpected = malloc(sizeof(void*) * len);
   copyPtrs(pointersOrig, elements, len);
   copyPtrs(pointersExpected, elementsExpected, len);
-  quickSort(pointersOrig, len, (int (*)(void*, void*)) descending);
+  quickSort(pointersOrig, len, 1, descending);
 
   assert( numsEq(pointersExpected, pointersOrig, len) );
   free(pointersOrig);

@@ -1,22 +1,39 @@
+#include <stdarg.h>
+
+typedef int (*comp_func)(void*, void*);
+
+int ascending(void* aPtr, void* bPtr) {
+  int a = *(int*) aPtr, b = *(int*) bPtr;
+  return a > b;
+}
+
+int descending(void* aPtr, void* bPtr) {
+  int a = *(int*) aPtr,
+      b = *(int*) bPtr;
+  return a < b;
+}
+
 void quickSort(
-      void* array[], const int len,
-      int (*comp)(void*, void*)
-    );
+      void* array[], const int len, int comp_given, ...);
 
 static void quickSortStep(
-      void* array[], const int left, const int right,
-      int (*comp)(void*, void*)
-    );
+      void* array[], const int left, const int right, comp_func);
 
 static void _swap(void* arr[], const int i, const int j);
 
-void quickSort(void* array[], const int len,
-      int (*comp)(void*, void*)
-    ) {
+void quickSort(void* array[], const int len, int comp_given, ...) {
+  va_list argP;
 
-  quickSortStep(array, 0, len - 1,
-      (int (*)(void*, void*))comp
-    );
+  va_start(argP, comp_given);
+
+  if (comp_given) {
+    comp_func comparor = va_arg(argP, comp_func);
+    quickSortStep(array, 0, len - 1, comparor);
+  } else {
+    quickSortStep(array, 0, len - 1, (int (*)(void*, void*)) ascending);
+  }
+
+  va_end(argP);
 }
 
 static void quickSortStep(void* array[], const int left, const int right,
