@@ -2,17 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int ascending(void* aPtr, void* bPtr) {
-  int a = *(int*) aPtr, b = *(int*) bPtr;
-  return a > b;
-}
-
-int descending(void* aPtr, void* bPtr) {
-  int a = *(int*) aPtr,
-      b = *(int*) bPtr;
-  return a < b;
-}
-
 void copyPtrs(void** ptrs, int vals[], int len) {
   int i;
   for (i = 0; i < len; i++) {
@@ -32,7 +21,7 @@ int main() {
   void** pointers = malloc(sizeof(void*) * len);
   copyPtrs(pointers, nums, len);
 
-  quickSort(pointers, len, (int (*)(void*, void*)) descending);
+  quickSort(pointers, len, 1, (int (*)(void*, void*)) descending);
 
   for (i = 0; i < len; i++) {
     printf("%d ", *(int*) pointers[i]);

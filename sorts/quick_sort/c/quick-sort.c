@@ -1,6 +1,5 @@
+#include "quick-sort.h"
 #include <stdarg.h>
-
-typedef int (*comp_func)(void*, void*);
 
 int ascending(void* aPtr, void* bPtr) {
   int a = *(int*) aPtr, b = *(int*) bPtr;
@@ -13,13 +12,10 @@ int descending(void* aPtr, void* bPtr) {
   return a < b;
 }
 
-void quickSort(
-      void* array[], const int len, int comp_given, ...);
-
-static void quickSortStep(
+void quickSortStep(
       void* array[], const int left, const int right, comp_func);
 
-static void _swap(void* arr[], const int i, const int j);
+void _swap(void* arr[], const int i, const int j);
 
 void quickSort(void* array[], const int len, int comp_given, ...) {
   va_list argP;
@@ -36,10 +32,10 @@ void quickSort(void* array[], const int len, int comp_given, ...) {
   va_end(argP);
 }
 
-static void quickSortStep(void* array[], const int left, const int right,
-      int (*comp)(void*, void*)
+void quickSortStep(void* array[], const int left, const int right,
+      comp_func comp
     ) {
-  int pivot_idx, num_smaller, i, right_partition;
+  int pivot_idx, i, right_partition;
 
   // left is greater than right when there are two
   // els remaining and left starts at "partition + 1"
@@ -73,7 +69,7 @@ static void quickSortStep(void* array[], const int left, const int right,
     );
 }
 
-static void _swap(void* arr[], int i, int j) {
+void _swap(void* arr[], const int i, const int j) {
   void* temp = arr[i];
   arr[i] = arr[j];
   arr[j] = temp;
